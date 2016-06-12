@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context 
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+	<context:component-scan base-package="cn.itcast.cartoon">
+
+	</context:component-scan>
+
+	<context:property-placeholder location="classpath:jdbc.properties" />
+
+<!-- 配置SessionFactory （原本Hibernate中需要根据主配置文件去生成全局唯一的SessionFactory） -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<!-- 指定Hibernate主配置文件路径 -->
+		<property name="configLocation" value="classpath:hibernate.cfg.xml"></property>
+
+		<!-- 配置c3p0数据库连接池，如果不配置的话，就用hibernate.cfg.xml里的配置 -->
+		<property name="dataSource">
+			<!-- 连接池只有 SessionFactory使用，所以就在里面定义一个匿名bean -->
+			<bean class="com.mchange.v2.c3p0.ComboPooledDataSource">
+				<!-- 数据库连接信息 (数据库连接信息不要在这里写死，写在文件里，这里读取，以后要修改就直接在jdbc.properties里) -->
+				<property name="jdbcUrl" value="${jdbcUrl}"></property>
+				<property name="driverClass" value="${driverClass}"></property>
+				<property name="user" value="${user}"></property>
+				<property name="password" value="${password}"></property>
+				<!-- 其他配置： 连接池中保留的最大连接数、最小连接数等等 -->
+			</bean>
+		</property>
+		<!-- 也可以不用hibernate.cfg.xml文件，把：配置Hibernate的其他属性，引入hibernate映射文件 -->
+	</bean>
+	<bean id="txManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<!-- 注入sessionFactory -->
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<!-- 配置注解事务 -->
+	<tx:annotation-driven transaction-manager="txManager" />
+	
+     <!-- 管理员 -->
+	<bean id="adminAction" class="cn.itcast.cartoon.admin.action.AdminAction" scope="prototype">
+	<property name="adminService" ref="adminService"></property>
+	</bean>
+	<bean id="adminService" class="cn.itcast.cartoon.admin.service.AdminService" scope="prototype">
+	<property name="adminDao" ref="adminDao"></property>
+	</bean>
+	<bean id="adminDao" class="cn.itcast.cartoon.admin.dao.AdminDao" scope="prototype">
+	<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	 <!-- 管理员 -->
+	 
+	 <!-- 用户 -->
+	 <bean id="userAction" class="cn.itcast.cartoon.user.action.UserAction" scope="prototype">
+	 <property name="userService" ref="userService"></property>
+	 </bean>
+	 <bean id="userService" class="cn.itcast.cartoon.user.service.UserService" scope="prototype">
+	 <property name="userDao" ref="userDao"></property>
+	 </bean>
+	 <bean id="userDao" class="cn.itcast.cartoon.user.dao.UserDao" scope="prototype">
+	 <property name="sessionFactory" ref="sessionFactory"></property>
+	 </bean>
+	 <!-- 用户 -->
+	 
+	  <!-- 一级分类 -->
+	 <bean id="categoryAction" class="cn.itcast.cartoon.category.action.CategoryAction" scope="prototype">
+	 <property name="categoryService" ref="categoryService"></property>
+	 </bean>
+	 <bean id="categoryService" class="cn.itcast.cartoon.category.service.CategoryService" scope="prototype">
+	 <property name="categoryDao" ref="categoryDao"></property>
+	 </bean>
+	 <bean id="categoryDao" class="cn.itcast.cartoon.category.dao.CategoryDao" scope="prototype">
+	 <property name="sessionFactory" ref="sessionFactory"></property>
+	 </bean>
+	 <!-- 一级分类 -->
+</beans>

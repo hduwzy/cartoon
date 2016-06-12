@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE struts PUBLIC  
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"  
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<constant name="struts.i18n.encoding" value="utf-8"></constant>
+	<constant name="struts.devMode" value="true"></constant>
+	<constant name="struts.action.extension" value="action"></constant>
+	<constant name="struts.ui.theme" value="simple"></constant>
+	<package name="lushi" extends="struts-default" namespace="/">
+		<!-- 管理员 -->
+		<action name="admin_*" class="adminAction" method="{1}">
+			<result name="LoginSuccess">/admin/home.jsp</result>
+			<result name="LoginFail">/admin/fail.jsp</result>
+		</action>
+		<!-- 管理员 -->
+
+		<!-- 用户 -->
+		<action name="user_*" class="userAction" method="{1}">
+			<result name="findAllUser">/user/list.jsp</result>
+			<result name="tolist" type="redirectAction">user_findAllUser</result>
+		</action>
+		<!-- 用户 -->
+		
+		<!--一级分类-->
+		<action name="category_*" class="categoryAction" method="{1}">
+			<result name="findAllCategory">/category/list.jsp</result>
+			<result name="tolist" type="redirectAction">category_findAllCategory</result>
+			<result name="addUI">/category/add.jsp</result>
+			<result name="editUI">/category/edit.jsp</result>
+		</action>
+		<!-- 一级分类 -->
+	</package>
+</struts>  
